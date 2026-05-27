@@ -3,9 +3,11 @@ FROM php:8.2-apache
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN apt-get update && apt-get install -y \
-    libzip-dev unzip git \
-    && docker-php-ext-install zip pdo pdo_sqlite \
-    && docker-php-ext-enable pdo_sqlite
+    libzip-dev \
+    libsqlite3-dev \
+    unzip \
+    git \
+    && docker-php-ext-install zip pdo pdo_sqlite pdo_mysql
 
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite
