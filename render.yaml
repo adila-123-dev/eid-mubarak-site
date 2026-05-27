@@ -1,7 +1,7 @@
 services:
   - type: web
     name: eid-mubarak-site
-    env: php
+    runtime: php
     plan: free
 
     buildCommand: |
