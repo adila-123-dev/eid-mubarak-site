@@ -1,25 +1,12 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
-RUN apt-get update && apt-get install -y \
-    unzip \
-    git \
-    curl \
-    libsqlite3-dev
+# Copy all your project files into the Apache web root
+COPY . /var/www/html/
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html
 
-WORKDIR /app
+# Expose port 80
+EXPOSE 80
 
-COPY . .
-
-RUN composer install --no-dev --optimize-autoloader
-
-RUN touch database/database.sqlite
-
-RUN php artisan key:generate --force
-
-RUN php artisan migrate --force
-
-EXPOSE 10000
-
-CMD php artisan serve --host=0.0.0.0 --port=10000
+CMD ["apache2-foreground"]
