@@ -18,6 +18,10 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
+RUN php artisan migrate --force
+RUN php artisan config:clear
+RUN php artisan cache:clear
+
 RUN chown -R www-data:www-data /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html/database \
     && chmod -R 775 /var/www/html/storage \
