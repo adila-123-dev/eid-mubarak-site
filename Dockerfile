@@ -1,12 +1,22 @@
 FROM php:8.2-apache
 
-# Copy all your project files into the Apache web root
-COPY . /var/www/html/
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html
+# Install required PHP extensions for Laravel
+RUN apt-get update && apt-get install -y \
+    libzip-dev unzip git \
+    && docker-php-ext-install zip pdo pdo_mysql
 
-# Expose port 80
+WORKDIR /var/www/html
+
+COPY . .
+
+RUN composer install --no-dev --optimize-autoloader
+
+RUN chown -R www-data:www-data /var/www/html/storage \
+    && chmod -R 775 /var/www/html/storage
+
 EXPOSE 80
 
 CMD ["apache2-foreground"]
